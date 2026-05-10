@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 
+import { connectDb } from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
@@ -21,6 +22,15 @@ export function createApp() {
 
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
+  });
+
+  app.use(async (req, res, next) => {
+    try {
+      await connectDb();
+      next();
+    } catch (err) {
+      next(err);
+    }
   });
 
   app.use('/api/auth', authRoutes);
